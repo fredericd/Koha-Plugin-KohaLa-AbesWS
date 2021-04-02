@@ -1,0 +1,104 @@
+[% INCLUDE "$PLUGIN_DIR/head.tt" %]
+
+<h1>Configuration de KohaLa Abes WS</h1>
+
+<form method="get">
+
+ <input type="hidden" name="class" value="[% CLASS %]"/>
+ <input type="hidden" name="method" value="[% METHOD %]"/>
+
+ <fieldset class="rows">
+  <legend>Accès aux WS</legend>
+  <ol>
+   <li>
+    <label for="url.api">Services web :</label>
+    <input id="url.api" type="text" name="url.api" size="50" value="[% c.url.api %]" />
+   </li>
+   <li>
+    <label for="url.algo">URL du service : </label>
+    <input id="url.algo" type="text" name="url.algo" size="40" value="[% c.url.algo %]" />
+   </li>
+   <li>
+    <label for="url.timeout">Timeout en secondes :</label>
+    <input id="url.timeout" type="text" name="url.timeout" size="50" value="[% c.url.timeout %]" />
+   </li>
+  </ol>
+ </fieldset>
+
+ <fieldset class="rows">
+  <legend>Etablissement</legend>
+  <ol>
+   <li>
+    <label for="iln.iln">ILN : </label>
+    <input id="iln.iln" type="text" name="iln.iln" size="15" value="[% c.iln.iln %]" />
+   </li>
+   <li>
+    <label for="iln.rcr">RCR : </label>
+    <textarea id="iln.rcr" name="iln.rcr" rows="5" cols="100">[% c.iln.rcr %]</textarea>
+    <p>Pour les établissements ayant plusieurs RCR (bibliothèques), séparer les ILN
+       par des retours à la ligne.</p>
+   </li>
+   <li>
+    <label for="iln.ppn">Champ PPN : </label>
+    <input id="iln.ppn" type="text" name="iln.ppn" size="15" value="[% c.iln.ppn %]" />
+    <p>
+      Le champ Koha contenant le PPN. Ce doit être un champ de la base de données MySQL/MariaDB
+      qui est lié à la zone Unimarc contenant le PPN Sudoc. Généralement : <b>biblioitems.lccn</b>
+      que l'on lie à la zone contenant le PPN (001, 009, 099$p).
+   </li>
+  </ol>
+ </fieldset>
+
+ <fieldset class="rows">
+  <legend>bibliocontrol</legend>
+  <ol>
+   <li>
+    <label for="bibliocontrol.t225">Zone 225 : </label>
+    <input id="bibliocontrol.t225" type="checkbox" name="bibliocontrol.t225" size="15" value="1" [% IF c.bibliocontrol.t225 == 1 %]checked[% END %] />
+    Présence d'une zone 225 esseulée
+   </li>
+   <li>
+    <label for="bibliocontrol.f000">Fonction 000 : </label>
+    <input id="bibliocontrol.f000" type="checkbox" name="bibliocontrol.f000" size="15" value="1" [% IF c.bibliocontrol.f000 == 1 %]checked[% END %] />
+    Code fonction 000 en 700, 701 ou 702
+   </li>
+   <li>
+    <label for="bibliocontrol.t181">Zone 181 : </label>
+    <input id="bibliocontrol.t181" type="checkbox" name="bibliocontrol.t181" size="15" value="1" [% IF c.bibliocontrol.t181 == 1 %]checked[% END %] />
+    Présence simultanée d'une zone 181 et d'une sous-zone 200$b
+   </li>
+  </ol>
+ </fieldset>
+
+ <fieldset class="rows">
+  <legend>Page détail</legend>
+  <ol>
+   <li>
+    <label for="detail.enabled">Activer : </label>
+    <input id="detail.enabled" type="checkbox" name="detail.enabled" size="15" value="1" [% IF c.detail.enabled == 1 %]checked[% END %] />
+    Affichage d'infos provenant du Sudoc sur la page de détail des notices biblio
+   </li>
+   <li>
+    <label for="detail.location">Localisation : </label>
+    <input id="detail.location" type="checkbox" name="detail.location" size="15" value="1" [% IF c.detail.location == 1 %]checked[% END %] />
+    Les localisations (RCR) de la notice
+   </li>
+    <label for="detail.ppn_selector">Sélecteur PPN : </label>
+    <input id="detail.ppn_selector" type="text" name="detail.ppn_selector" size="15" value="[% c.detail.ppn_selector %]" />
+    <p>
+      Sélecteur jQuery permettant de retrouver le PPN dans la page de détail. C'est la feuille
+      de style XSL de la page de détail de l'interface pro qui affiche et rend accessible
+      le PPN. Par exemple, <b>#ppn_value</b>.
+    </p>
+    </li>
+  </ol>
+ </fieldset>
+
+ <fieldset class="action">
+  <input type="hidden" name="save" value="1" />
+  <input type="submit" value="Enregistrer" />
+ </fieldset>
+
+</form>
+
+[% INCLUDE "$PLUGIN_DIR/foot.tt" %]
