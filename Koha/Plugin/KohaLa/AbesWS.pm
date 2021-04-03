@@ -25,7 +25,7 @@ our $metadata = {
     minimum_version => '20.05.00.000',
     maximum_version => undef,
     copyright       => '2021',
-    version         => '1.0.0',
+    version         => '1.0.1',
 };
 
 
@@ -398,6 +398,8 @@ function pageDetail() {
                     '</ul></div>';
                 \$('#sudoc_tab').append(html);
                 tabs.tabs("refresh");
+                \$('#ui-id-20').css('font-weight','bold').css('color','green');
+
             });
     }
 }

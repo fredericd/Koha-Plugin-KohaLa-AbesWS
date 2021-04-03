@@ -4,7 +4,7 @@
 </div>
 
 <div style="text-align:center; ">
- <img src="[%PLUGIN_PATH%]/img/logo-kohala.png" width="15%"/>
+ <img src="[%PLUGIN_PATH%]/img/logo-kohala.png" />
  <br/>
  &copy; [% c.metadata.copyright %]
  — Version [% c.metadata.version %]
