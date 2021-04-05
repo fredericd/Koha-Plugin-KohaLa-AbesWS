@@ -1,5 +1,5 @@
 [% INCLUDE 'doc-head-open.inc' %]
- <title>Koha ABES WS</title>
+ <title>Abes WS</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 <body>

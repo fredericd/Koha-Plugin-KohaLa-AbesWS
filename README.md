@@ -15,8 +15,8 @@ Ce plugin a été conçu et développé lors d'un atelier _Services web de
 l'[Abes](https://abes.fr)_ qui s'est tenu lors du Hackathon 2021 de
 l'association [KohaLa](http://koha-fr.org) des utilisateurs français de Koha.
 
-![Abes](Koha/Plugin/KohaLa/AbesWS/img/logo-abes.svg)
-![KohaLa](Koha/Plugin/KohaLa/AbesWS/img/logo-kohala.png)
+![Abes](https://raw.githubusercontent.com/fredericd/Koha-Plugin-KohaLa-AbesWS/master/Koha/Plugin/KohaLa/AbesWS/img/logo-abes.svg)
+![KohaLa](https://raw.githubusercontent.com/fredericd/Koha-Plugin-KohaLa-AbesWS/master/Koha/Plugin/KohaLa/AbesWS/img/logo-kohala.png)
 
 ## Installation
 
@@ -26,11 +26,11 @@ points suivants :
 
 - Dans `koha-conf.xml`, activez les plugins.
 - Dans le fichier de configuration d'Apache, définissez l'alias `/plugins`.
-  Faites en sorte que le répertoire pointé est les droits nécessaires.
+  Faites en sorte que le répertoire pointé ait les droits nécessaires.
 
 **📁 TÉLÉCHARGEMENT** — Récupérez sur le site [Tamil](https://www.tamil.fr)
 l'archive de l'Extension **[KohaLa Abes
-WS](https://www.tamil.fr/download/koha-plugin-kohala-abesws-1.0.0.kpz)**.
+WS](https://www.tamil.fr/download/koha-plugin-kohala-abesws-1.0.2.kpz)**.
 
 Dans l'interface pro de Koha, allez dans `Outils > Outils de Plugins`. Cliquez
 sur Télécharger un plugin. Choisissez l'archive **téléchargée** à l'étape

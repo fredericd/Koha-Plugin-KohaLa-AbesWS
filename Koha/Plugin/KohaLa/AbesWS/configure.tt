@@ -35,8 +35,12 @@
    <li>
     <label for="iln.rcr">RCR : </label>
     <textarea id="iln.rcr" name="iln.rcr" rows="5" cols="100">[% c.iln.rcr %]</textarea>
-    <p>Pour les établissements ayant plusieurs RCR (bibliothèques), séparer les ILN
-       par des retours à la ligne.</p>
+    <p>
+      Pour les établissements ayant plusieurs RCR (bibliothèques), séparer les ILN
+      par des retours à la ligne. Sur chaque ligne contenant un RCR, il est possible
+      de faire suivre le RCR du nom en clair de la bibliothèque, précédé d'un espace.
+      Par exemple : <code>341725201 ABES - Centre de doc</code>
+    </p>
    </li>
    <li>
     <label for="iln.ppn">Champ PPN : </label>

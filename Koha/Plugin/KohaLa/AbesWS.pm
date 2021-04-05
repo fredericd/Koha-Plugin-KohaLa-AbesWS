@@ -21,15 +21,22 @@ our $metadata = {
     description     => 'Utilisation de services web Abes',
     author          => 'Tamil s.a.r.l.',
     date_authored   => '2021-03-31',
-    date_updated    => "2021-01-31",
+    date_updated    => "2021-04-05",
     minimum_version => '20.05.00.000',
     maximum_version => undef,
     copyright       => '2021',
-    version         => '1.0.1',
+    version         => '1.0.2',
 };
 
 
 my $conf = {
+    bibliocontrol => {
+        errors => [
+            'une 225 est presente sans 410 ni 461',
+            'une 700 701 702 n a pas de code fonction',
+            'une 181 est presente en meme temps qu une 200$b',
+        ],
+    },
     algo => {
         tdoc => {
             bib => {
@@ -59,10 +66,28 @@ my $conf = {
     },
 };
 
-my $service = {
-    init => sub {
-
+$conf->{algo}->{tdoc}->{get_array} = sub {
+    my @tdocs;
+    for ( (['bib', 'Biblio'], ['aut', 'Autorité']) ) {
+        my ($code, $type) = @$_;
+        my $tdoc = $conf->{algo}->{tdoc}->{$code};
+        for ( keys %$tdoc ) {
+            push @tdocs, [$_, "$type: " . $tdoc->{$_}];
+        }
     }
+    return \@tdocs;
+};
+
+$conf->{algo}->{tdoc}->{get_hash} = sub {
+    my %tdoc_hash;
+    for ( (['bib', 'Biblio'], ['aut', 'Autorité']) ) {
+        my ($code, $type) = @$_;
+        my $tdoc = $conf->{algo}->{tdoc}->{$code};
+        for ( keys %$tdoc ) {
+            $tdoc_hash{$_} = "$type: " . $tdoc->{$_};
+        }
+    }
+    return \%tdoc_hash;
 };
 
 sub new {
@@ -74,7 +99,6 @@ sub new {
 
     $class->SUPER::new($args);
 }
-
 
 sub config {
     my $self = shift;
@@ -96,11 +120,20 @@ sub config {
     $c->{url}->{timeout} ||= 600;
     $c->{metadata} = $self->{metadata};
 
+    my @rcr = split /\r|\n/, $c->{iln}->{rcr};
+    @rcr = grep { $_ } @rcr;
+    @rcr = map {
+        /^([0-9]+) +(.+)$/ ? [$1, $2] : [$_, $_];
+    } @rcr;
+    $c->{iln}->{rcr_array} = \@rcr;
+
+    my %bib_per_rcr = map { $_->[0] => $_->[1] } @rcr;
+    $c->{iln}->{rcr_hash} = \%bib_per_rcr;
+
     $self->{args}->{c} = $c;
 
     return $c;
 }
-
 
 sub get_form_config {
     my $cgi = shift;
@@ -147,14 +180,16 @@ sub get_form_config {
     return $c;
 }
 
-
 sub configure {
     my ($self, $args) = @_;
     my $cgi = $self->{'cgi'};
 
     if ( $cgi->param('save') ) {
         my $c = get_form_config($cgi);
-        my $rcr = [ split /\n/, $c->{iln}->{rcr} ];
+        my $rcr = [
+            map { s/'/''/g }
+            split /\n/, $c->{iln}->{rcr}
+        ];
         $self->store_data({ c => encode_json($c) });
         print $self->{'cgi'}->redirect(
             "/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::KohaLa::AbesWS&method=tool");
@@ -166,13 +201,13 @@ sub configure {
     }
 }
 
-
 sub tool {
     my ($self, $args) = @_;
 
-    my $cgi = $self->{'cgi'};
+    my $cgi = $self->{cgi};
 
     my $template;
+    my $c = $self->config();
     my $ws = $cgi->param('ws');
     if ( $ws ) {
         if ($ws eq 'bibliocontrol') {   
@@ -183,7 +218,7 @@ sub tool {
                 $template->param( bibs => $self->get_bibliocontrol($rcr) );
             }
             else {      
-                $template->param( rcr_select => $self->get_rcr() );
+                $template->param( rcr_select => $c->{iln}->{rcr_array} );
             }
         }
         elsif ($ws eq 'algo') {
@@ -191,29 +226,13 @@ sub tool {
             my @rcr = $cgi->multi_param('rcr');
             my @tdoc = $cgi->multi_param('tdoc');
             if (@rcr) {
-                my %tdoc_hash;
-                for ( (['bib', 'Biblio'], ['aut', 'Autorité']) ) {
-                    my ($code, $type) = @$_;
-                    my $tdoc = $conf->{algo}->{tdoc}->{$code};
-                    for ( keys %$tdoc ) {
-                        $tdoc_hash{$_} = "$type: " . $tdoc->{$_};
-                    }
-                }
-                $template->param( rcr_hash => $self->get_rcr_hash() );
-                $template->param( tdoc_hash => \%tdoc_hash );
+                $template->param( rcr_hash => $c->{iln}->{rcr_hash} );
+                $template->param( tdoc_hash => $conf->{algo}->{tdoc}->{get_hash}->() );
                 $template->param( recs => $self->get_algo(\@rcr, \@tdoc) );
             }
             else {
-                $template->param( rcr_select => $self->get_rcr() );
-                my @tdoc_select;
-                for ( (['bib', 'Biblio'], ['aut', 'Autorité']) ) {
-                    my ($code, $type) = @$_;
-                    my $tdoc = $conf->{algo}->{tdoc}->{$code};
-                    for ( keys %$tdoc ) {
-                        push @tdoc_select, [$_, "$type: " . $tdoc->{$_}];
-                    }
-                }
-                $template->param( tdoc_select => \@tdoc_select );
+                $template->param( rcr_select => $c->{iln}->{rcr_array} );
+                $template->param( tdoc_select => $conf->{algo}->{tdoc}->{get_array}->() );
             }
         }
     }
@@ -223,25 +242,6 @@ sub tool {
     $template->param( c => $self->config() );
     $template->param( WS => $ws ) if $ws;
     $self->output_html( $template->output() );
-}
-
-
-sub get_rcr {
-    my $self = shift;
-    my $c = $self->config();
-    my @rcr = split /\r|\n/, $c->{iln}->{rcr};
-    @rcr = grep { $_ } @rcr;
-    @rcr = map {
-        /^([0-9]+) +(.+)$/ ? [$1, $2] : [$_, $_];
-    } @rcr;
-    return \@rcr;
-}
-
-sub get_rcr_hash {
-    my $self = shift;
-    my $rcr = $self->get_rcr();
-    my %bib_per_rcr = map { $_->[0] => $_->[1] } @$rcr;
-    return \%bib_per_rcr;
 }
 
 sub get_biblio_per_ppn {
@@ -285,11 +285,14 @@ sub get_bibliocontrol {
     my @lines = split /\n/, $res;
     shift @lines;
     my %per_ppn;
-    my %errors = (
-        'une 225 est presente sans 410 ni 461' => 0,
-        'une 700 701 702 n a pas de code fonction' => 1,
-        'une 181 est presente en meme temps qu une 200$b' => 2,
-    );
+    my %errors;
+    {
+        my @err = @{$conf->{bibliocontrol}->{errors}};
+        for (my $i=0; $i < @err; $i++) {
+            $errors{$err[$i]} = $i;
+        }
+    }
+
     for my $line (@lines) {
         $line =~ s/\r$//;
         my ($ppn, undef, $what) = split /\t/, $line;
@@ -346,73 +349,22 @@ sub get_algo {
 
 sub intranet_js {
     my $self = shift;
-    my $c = $self->config();
-
-    my $bib_per_rcr = $c->{detail}->{enabled}
-        ? to_json($self->get_rcr_hash())
-        : undef;
-
+    my $js_file = $self->get_plugin_http_path() . "/abesws.js";
+    my $c = to_json($self->config());
     return <<EOS;
 <script>
 \$(document).ready(() => {
-    if ($c->{detail}->{enabled} && \$('body').is("#catalog_detail")) {
-        pageDetail();
-    }
+  \$.getScript("$js_file")
+    .done(() => \$.abesWs($c));
 });
-
-function SortBibs(bibs) {
-    const bibPerRcr = JSON.parse('$bib_per_rcr');
-    bibs.forEach((bib) => {
-        bib.itsme = bibPerRcr[bib.rcr] ? true : false;
-        bib.sortname = bib.itsme ? ' ' + bib.shortname : bib.shortname;
-    });
-    bibs = bibs.sort((a, b) => a.sortname.localeCompare(b.sortname));
-    console.log(bibs);
-    return bibs;
-}
-
-function pageDetail() {
-    if ( $c->{detail}->{location} ) {
-        var tabMenu = "<li class='ui-state-default ui-corner-top' role='tab' tabindex='-1' aria-controls='sudoc_tab' aria-labelledby='ui-id-7' aria-selected='false'><a href='#sudoc_tab' class='ui-tabs-anchor' role='presentation' tabindex='-1' id='ui-id-20'>Sudoc</a></li>";
-        var tabs = \$('#bibliodetails').tabs();
-        var ul = tabs.find("ul");
-        \$(ul).append(tabMenu);
-        \$(tabs).append('<div id="sudoc_tab"  aria-labelledby="ui-id-20" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-hidden="true" style="display: none;"></div>');
-        tabs.tabs("refresh");
-        const ppn = \$('$c->{detail}->{ppn_selector}').text();
-        const url = "$c->{url}->{api}/multiwhere/" + ppn + '&format=text/json';
-        jQuery.getJSON(url)
-            .done((data) => {
-                let bibs = data?.sudoc?.query?.result?.library;
-                if (!Array.isArray(bibs)) bibs = [ bibs ];
-                bibs = SortBibs(bibs);
-                let html = '<div style="padding-top:10px;">' +
-                    '<h4><img src="http://www.sudoc.abes.fr/~c_psi/psi_images/img_psi/3.0/icons/sudoc.png"/> Localisation dans le Sudoc</h4>' +
-                    '<ul>' +
-                    bibs.map((bib) => {
-                        let shortname = '<a href="http://www.sudoc.abes.fr/cbs/xslt//DB=2.1/SET=1/TTL=1/CLK?IKT=8888&TRM='
-                            + bib.rcr + '" target="_blank">' + bib.shortname + '</a>';
-                        if (bib.itsme) shortname = '<b>' + shortname + '</b>';
-                        return '<li>' + shortname + '</li>'
-                    }).join('') +
-                    '</ul></div>';
-                \$('#sudoc_tab').append(html);
-                tabs.tabs("refresh");
-                \$('#ui-id-20').css('font-weight','bold').css('color','green');
-
-            });
-    }
-}
-
 </script>
 EOS
-}
 
+}
 
 sub install() {
     my ($self, $args) = @_;
 }
-
 
 sub upgrade {
     my ($self, $args) = @_;
@@ -422,7 +374,6 @@ sub upgrade {
 
     return 1;
 }
-
 
 sub uninstall() {
     my ($self, $args) = @_;
