@@ -81,7 +81,7 @@ Quatre sections pilotent le fonctionnement du plugin :
   - **Sélecteur PPN** — Sélecteur jQuery permettant de retrouver le PPN dans la
     page de détail. C'est la feuille de style XSL de la page de détail de
     l'interface pro qui affiche et rend accessible le PPN. Par exemple,
-    #ppn_value.
+    `#ppn_value`.
 
 ### Bibliocontrol
 
@@ -106,15 +106,15 @@ identifie les notices présentant des zones pour lesquelles il manque les
 sous-zones de liens. C'est par exemple une zone comme celle-ci :
 
 ```text
-702  1 $a Arbus $b Prénom Sanson $4 610
+702  1 $a Arbus $b Sanson $4 610
 ```
 
 qui n'a pas de sous-zone `$3` établissant un lien avec une autorité Auteur.
 
-Sur la page de démarrage, on sélectionne le/les RCR ainsi les types de notice
-que l'on souhaite contrôler. On distingue les notices bibliographiques des
-notices d'autorité. Pour chaque notice, on peut choisir des types de document ou
-des types d'autorité.
+Sur la page de démarrage, on sélectionne le/les RCR ainsi que les types de
+notice que l'on souhaite contrôler. On distingue les notices bibliographiques
+des notices d'autorité. Pour chaque notice, on peut choisir des types de
+document ou des types d'autorité.
 
 Un tableau présente le résultat obtenu au moyen de l'appel du service web
 AlgoLiens.
