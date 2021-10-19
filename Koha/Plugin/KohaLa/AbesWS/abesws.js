@@ -50,7 +50,7 @@ function pageDetail() {
 
 function run(conf) {
   c = conf;
-  if (c.detail.enabled && $('body').is("#catalog_detail")) {
+  if (c?.detail?.enabled && $('body').is("#catalog_detail")) {
     pageDetail();
   }
 }
