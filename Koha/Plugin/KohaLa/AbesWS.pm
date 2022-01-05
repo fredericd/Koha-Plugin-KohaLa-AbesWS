@@ -12,7 +12,6 @@ use Mojo::JSON qw(decode_json encode_json);
 use Template;
 use Encode qw/ decode /;
 use YAML;
-use JSON qw/ decode_json to_json /;
 
 
 ## Here is our metadata, some keys are required, some are optional
@@ -21,11 +20,11 @@ our $metadata = {
     description     => 'Utilisation de services web Abes',
     author          => 'Tamil s.a.r.l.',
     date_authored   => '2021-03-31',
-    date_updated    => "2021-10-19",
+    date_updated    => "2022-01-05",
     minimum_version => '20.05.00.000',
     maximum_version => undef,
-    copyright       => '2021',
-    version         => '1.0.5',
+    copyright       => '2022',
+    version         => '1.0.6',
 };
 
 
@@ -350,7 +349,7 @@ sub get_algo {
 sub intranet_js {
     my $self = shift;
     my $js_file = $self->get_plugin_http_path() . "/abesws.js";
-    my $c = to_json($self->config());
+    my $c = encode_json($self->config());
     return <<EOS;
 <script>
 \$(document).ready(() => {

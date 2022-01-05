@@ -129,8 +129,27 @@ localisation de la notice dans les établissements Sudoc sont affichées. Chaque
 établissement est un lien vers la page Sudoc du RCR : nom de établissement,
 adresse, téléphone, etc.
 
+On active cette fonctionnalité dans la page de configuration du plugin. Le
+paramètre **Sélecteur PPN** doit être renseigné. Il permet au plugin de
+localiser le PPN à l'affichage sur la page de détail. La feuille de style XSL
+d'affichage doit être adaptée en conséquence. Par exemple, si on a le PPN dans
+le tag 009 et si on définit un sélecteur PPN **#ppn_value**, la feuille de style
+devra contenir quelque chose qui ressemble à ceci :
+
+```xml
+<xsl:if test="marc:controlfield[@tag=009]">
+  <span class="results_summary tag_009">
+    <span class="label">Champ 009 : </span>
+    <span id="ppn_value">
+      <xsl:value-of select="marc:controlfield[@tag=009]"/>
+    </span>
+  </span>
+</xsl:if>
+```
+
 ## VERSIONS
 
+* **1.0.6** / janvier 2022 — Un peu plus de doc
 * **1.0.3** / avril 2021 — Version initiale
 
 ## LICENCE
