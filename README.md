@@ -30,7 +30,7 @@ points suivants :
 
 **📁 TÉLÉCHARGEMENT** — Récupérez sur le site [Tamil](https://www.tamil.fr)
 l'archive de l'Extension **[KohaLa Abes
-WS](https://www.tamil.fr/download/koha-plugin-kohala-abesws-1.0.5.kpz)**.
+WS](https://www.tamil.fr/download/koha-plugin-kohala-abesws-1.0.6.kpz)**.
 
 Dans l'interface pro de Koha, allez dans `Outils > Outils de Plugins`. Cliquez
 sur Télécharger un plugin. Choisissez l'archive **téléchargée** à l'étape
@@ -149,7 +149,7 @@ devra contenir quelque chose qui ressemble à ceci :
 
 ## VERSIONS
 
-* **1.0.5** / janvier 2022 — Un peu plus de doc
+* **1.0.6** / janvier 2022 — Un peu plus de doc
 * **1.0.3** / avril 2021 — Version initiale
 
 ## LICENCE
