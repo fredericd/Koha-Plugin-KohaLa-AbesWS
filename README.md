@@ -149,7 +149,7 @@ devra contenir quelque chose qui ressemble à ceci :
 
 ## VERSIONS
 
-* **1.0.6** / janvier 2022 — Un peu plus de doc
+* **1.0.5** / janvier 2022 — Un peu plus de doc
 * **1.0.3** / avril 2021 — Version initiale
 
 ## LICENCE
