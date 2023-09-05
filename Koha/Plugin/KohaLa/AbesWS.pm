@@ -17,11 +17,12 @@ use YAML;
 ## Here is our metadata, some keys are required, some are optional
 our $metadata = {
     name            => 'KohaLa AbesWS',
+    canonicalname   => 'koha-plugin-kohala-abesws',
     description     => 'Utilisation de services web Abes',
     author          => 'Tamil s.a.r.l.',
     date_authored   => '2021-03-31',
     date_updated    => "2023-09-04",
-    minimum_version => '21.11.00.000',
+    minimum_version => '22.11.00.000',
     maximum_version => undef,
     copyright       => '2023',
     version         => '1.0.8',
