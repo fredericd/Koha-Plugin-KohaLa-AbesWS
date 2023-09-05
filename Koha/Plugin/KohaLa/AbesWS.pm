@@ -20,11 +20,11 @@ our $metadata = {
     description     => 'Utilisation de services web Abes',
     author          => 'Tamil s.a.r.l.',
     date_authored   => '2021-03-31',
-    date_updated    => "2022-01-05",
-    minimum_version => '20.05.00.000',
+    date_updated    => "2023-09-04",
+    minimum_version => '21.11.00.000',
     maximum_version => undef,
-    copyright       => '2022',
-    version         => '1.0.6',
+    copyright       => '2023',
+    version         => '1.0.8',
 };
 
 
@@ -151,11 +151,17 @@ sub get_form_config {
             t225 => 0,
             f000 => 0,
             t181 => 0,
+            link_koha => 'marc',
         },
         detail => {
             enabled => 0,
             location => 0,
             ppn_selector => undef,
+        },
+        opac => {
+            publication => {
+                enabled => 0,
+            },
         },
     };
 
@@ -358,7 +364,22 @@ sub intranet_js {
 });
 </script>
 EOS
+}
 
+sub opac_js {
+  shift->intranet_js();
+}
+
+sub api_namespace {
+    my ($self) = $_;
+    return 'abesws';
+}
+
+sub api_routes {
+    my $self = shift;
+    my $spec_str = $self->mbf_read('openapi.json');
+    my $spec     = decode_json($spec_str);
+    return $spec;
 }
 
 sub install() {

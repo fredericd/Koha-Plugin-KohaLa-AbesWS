@@ -41,7 +41,7 @@
         <a href="https://www.sudoc.fr/[% bib.ppn %]" target="_blank" title="Dans le Sudoc">[% bib.ppn %]</a>
       </td>
       <td>
-        <a href="/cgi-bin/koha/catalogue/MARCdetail.pl?biblionumber=[% bib.biblionumber %]"
+        <a href="/cgi-bin/koha/catalogue/[% IF c.bibliocontrol.link_koha == 'marc' %]MARC[% END %]detail.pl?biblionumber=[% bib.biblionumber %]"
            target="_blank" title="Dans Koha">[% bib.title %]</a>
       </td>
       <td>[% IF bib.ctrl.0 %]⚠️[% END %]</td>

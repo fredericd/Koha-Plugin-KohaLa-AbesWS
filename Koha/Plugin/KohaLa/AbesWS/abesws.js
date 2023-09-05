@@ -21,13 +21,21 @@ function getBibsFromPpn(ppn, cb) {
 
 function pageDetail() {
   if ( c.detail.location ) {
-    var tabMenu = "<li class='ui-state-default ui-corner-top' role='tab' tabindex='-1' aria-controls='sudoc_tab' aria-labelledby='ui-id-7' aria-selected='false'><a href='#sudoc_tab' class='ui-tabs-anchor' role='presentation' tabindex='-1' id='ui-id-20'>Sudoc</a></li>";
-    var tabs = $('#bibliodetails').tabs();
-    var ul = tabs.find("ul");
-    $(ul).append(tabMenu);
-    $(tabs).append('<div id="sudoc_tab"  aria-labelledby="ui-id-20" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-hidden="true" style="display: none;"></div>');
-    tabs.tabs("refresh");
     const ppn = $(c.detail.ppn_selector).text();
+    if (ppn === '') {
+      console.log('PPN non trouvé. Manque-t-il le sélecteur PPN ?');
+      return;
+    }
+    $('.nav-tabs').append(`
+      <li role="presentation">
+        <a href="#sudoc" aria-controls="sudoc" role="tab" data-toggle="tab" aria-expanded="false">Sudoc</a>
+      </li>
+    `);
+    $('#bibliodetails .tab-content').append(`
+      <div role="tabpanel" class="tab-pane" id="sudoc">
+        <div id="sudoc-content"></div>
+      </div>
+    `);
     getBibsFromPpn(ppn, (bibs) => {
       let html = '<div style="padding-top:10px;">' +
       '<h4><img src="http://www.sudoc.abes.fr/~c_psi/psi_images/img_psi/3.0/icons/sudoc.png"/> Localisation</h4>' +
@@ -41,18 +49,97 @@ function pageDetail() {
         return '<li>' + shortname + '</li>'
       }).join('') +
       '</ul></div>';
-      $('#sudoc_tab').append(html);
-      tabs.tabs("refresh");
-      $('#ui-id-20').css('font-weight','bold').css('color','green');
+      $('#sudoc-content').html(html);
     });
   }
+}
+
+function opacDetail() {
+  $('span.idref-link').each(function(index){
+    const ppn = $(this).attr('ppn');
+    const html = `
+      <a class="idref-link-click" style="cursor: pointer;" ppn="${ppn}" title="See publications in IdRef">
+        <img src="/plugin/Koha/Plugin/KohaLa/AbesWS/img/idref-short.svg" width="5%">
+      </a>`;
+    $(this).html(html);
+  });
+  $('.idref-link-click').click(function(){
+    const ppn = $(this).attr('ppn');
+    const url = `/api/v1/contrib/abesws/biblio/${ppn}`;
+    jQuery.getJSON(url)
+      .done((publications) => {
+        let html;
+        if (publications.name === '') {
+          html = __('Author not found in IdRef');
+        } else {
+          const navig = publications.roles.map(role => `<a href="#idref-role-${role.code}" style="font-size: 90%;">${role.label} (${role.docs.length})</a>`);
+          html = `
+            <h2>
+              ${publications.name} / <small>
+              <a href="https://www.idref.fr/${publications.ppn}" target="_blank">${publications.ppn}</a>
+              </small>
+            </h2>
+            <div>
+            <div style="margin-bottom: 5px;";>${navig.join(' • ')}</div>`;
+          publications.roles.forEach((role) => {
+            html += `
+              <h3 id="idref-role-${role.code}">${role.label}</h3>
+              <table class="table table-striped table-hover table-sm"><tbody>`;
+            role.docs.forEach((doc) => {
+              html += `
+                <tr>
+                  <td>
+                  <a href="https://www.sudoc.fr/${doc.ppn}" target="_blank" rel="noreferrer">
+                  <img title="` + __('Publication In Sudoc Catalog') + `" src="/plugin/Koha/Plugin/KohaLa/AbesWS/img//sudoc.png" />
+                  </a>`;
+              if (doc.bib) {
+                html += `
+                  <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=${doc.bib}" target="_blank">
+                  <img title="` + __('Publication In Local Catalog') + `" src="/opac-tmpl/bootstrap/images/favicon.ico" />
+                  </a>`;
+              }
+              html += `</td><td>${doc.citation}</td></tr>`;
+            });
+            html += '</tbody></table>';
+          });
+          html += '</div>';
+        }
+        const idrefDiv = $('#idref-publications');
+        if (idrefDiv.length) {
+          idrefDiv.html(html);
+        } else {
+          html = `<div id="idref-publications">${html}</div>`;
+          $('.nav-tabs').append(`
+            <li id="tab_idref" class="nav-item" role="presentation">
+             <a href="#idref-publications" class="nav-link" id="tab_idref-tab"
+                data-toggle="tab" role="tab" aria-controls="tab_idref" aria-selected="false"
+             >
+               <img src="/plugin/Koha/Plugin/KohaLa/AbesWS/img/idref.svg" style="height: 20px;"/>
+             </a>
+            </li>
+          `);
+          $('#bibliodescriptions .tab-content').append(`
+            <div id="idref-publications" class="tab-pane" role="tabpanel" aria-labelledby="tab_idref-tab">
+              ${html}
+            <div>
+          `);
+        }
+        $('a[href="#idref-publications"]').click();
+        $([document.documentElement, document.body]).animate({
+          scrollTop: $("#idref-publications").offset().top
+        }, 2000);
+      });
+    });
 }
 
 function run(conf) {
   c = conf;
   if (c?.detail?.enabled && $('body').is("#catalog_detail")) {
     pageDetail();
+  } else if (c?.opac?.publication?.enabled && $('body').is('#opac-detail')) {
+    opacDetail();
   }
+
 }
 
 $.extend({

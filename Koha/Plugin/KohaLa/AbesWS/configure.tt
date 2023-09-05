@@ -71,6 +71,13 @@
     <input id="bibliocontrol.t181" type="checkbox" name="bibliocontrol.t181" size="15" value="1" [% IF c.bibliocontrol.t181 == 1 %]checked[% END %] />
     Présence simultanée d'une zone 181 et d'une sous-zone 200$b
    </li>
+   <li>
+    <label for="bibliocontrol.link_koha">Lien vers Koha : </label>
+    <select id="bibliocontrol.link_koha" name="bibliocontrol.link_koha">
+     <option value="marc" [% IF c.bibliocontrol.link_koha == 'marc' %]selected[% END %]>Vue MARC</option>
+     <option value="normale" [% IF c.bibliocontrol.link_koha == 'normale' %]selected[% END %]>Vue Normale</option>
+    </select>
+   </li>
   </ol>
  </fieldset>
 
@@ -95,6 +102,34 @@
       le PPN. Par exemple, <b>#ppn_value</b>.
     </p>
     </li>
+  </ol>
+ </fieldset>
+
+ <fieldset class="rows">
+  <legend>Publications IdRef</legend>
+  <ol>
+   <li>
+    <label for="opac.publication.enabled">Activer : </label>
+    <input id="opac.publication.enabled" type="checkbox" name="opac.publication.enabled" size="15" value="1" [% IF c.opac.publication.enabled == 1 %]checked[% END %] />
+    Affichage à l'OPAC des infos provenant du service web <a href="https://documentation.abes.fr/aideidrefdeveloppeur/index.html#MicroWebBiblio">Biblio</a>
+    de IdRef.
+   </li>
+
+   <p>
+     Votre feuille de style de la page de détail de l'OPAC doit être modifiée
+     pour afficher une balise span contenant le PPN de l'auteur dont on affiche
+     les publications. Par exemple :
+   </p>
+   <xmp><span class="idref-link" ppn="124680866"/></xmp>
+   <p>
+     Ce qui revient à ajouter le code suivant à votre feuille XSL :</p>
+   <xmp><xsl:if test="marc:subfield[@code=3]">
+  <span class="idref-link">
+    <xsl:attribute name="ppn">
+      <xsl:value-of select="str:encode-uri(marc:subfield[@code=3], true())"/>
+    </xsl:attribute>
+  </span>
+</xsl:if></xmp>
   </ol>
  </fieldset>
 
