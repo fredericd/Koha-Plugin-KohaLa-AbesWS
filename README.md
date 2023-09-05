@@ -149,12 +149,13 @@ devra contenir quelque chose qui ressemble à ceci :
 
 ## VERSIONS
 
+* **1.0.8** / septembre 2023 - Koha 22.11 + affichage idref à l'OPAC
 * **1.0.6** / janvier 2022 — Un peu plus de doc
 * **1.0.3** / avril 2021 — Version initiale
 
 ## LICENCE
 
-This software is copyright (c) 2021 by Tamil s.a.r.l..
+This software is copyright (c) 2023 by Tamil s.a.r.l.
 
 This is free software; you can redistribute it and/or modify it under the same
 terms as the Perl 5 programming language system itself.
