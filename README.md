@@ -152,7 +152,15 @@ devra contenir quelque chose qui ressemble à ceci :
 En activant l'affichage des publications IdRef, la page de détail de l'OPAC est
 enrichie d'informations récupérées via le service web
 [biblio](https://documentation.abes.fr/aideidrefdeveloppeur/index.html#MicroWebBiblio)
-de l'ABES. La feuille de style de la page de détail doit insérer une balise
+de l'ABES.
+
+Les publications retrouvées via _biblio_ sont affichées regroupées par fonction
+de l'auteur relativement à la publication. Chaque publication présente un lien
+pour afficher la notice dans le Sudoc, ainsi qu'un lien vers la notice locale
+si elle existe dans le Catalogue Koha. L'identiication des notices Koha se fait
+sur un index Elasticsearch **ppn**.
+
+La feuille de style de la page de détail doit insérer une balise
 contenant les PPN des auteurs/collectivités. Le plugin utilisera ces PPN pour
 aller chercher à la demande des informations IdRef. Les PPN doivent être dans
 des balises de cette forme :
@@ -172,6 +180,51 @@ dans les templates des zones 7xx :
     </xsl:attribute>
   </span>
 </xsl:if>
+```
+
+**Service web** — Le plugin utilise et expose un service web qui peut se
+comprendre comme une extension du service web _biblio_ de l'ABES. Pour chaque
+notice, il comprend l'information supplémentaire du _biblionumber_ de la notice
+Koha. Point d'entrée du service web du plugin pour le PPN 259238678 :
+
+```
+/api/v1/contrib/abesws/biblio/259238678
+```
+
+qui renvoie :
+
+```json
+{
+  "ppn": "259238678",
+  "name": "Bigé, Emma (1987-....)",
+  "roles": [
+    {
+      "code": "070",
+      "label": "Auteur",
+      "docs": [
+        {
+          "ppn": "268922578",
+          "bib": "19701",
+          "citation": "Mouvementements  : écopolitiques de la danse  / Emma Bigé / Paris : la Découverte , DL 2023"
+        },
+        {
+          "ppn": "270354271",
+          "citation": "Mouvementements  : Écopolitiques de la danse  / Emma Bigé / Paris : La Découverte"
+        }
+      ],
+    },
+    {
+      "code": "651",
+      "label": "Directeur de publication",
+      "docs": [
+        {
+          "citation": "La perspective de la pomme  : histoire, politiques et pratiques du Contact Improvisation  / sous la direction de Emma Bigé, Francesca Falcone, Alice Godfroy, Alessandra Sini / Bologna : Piretti Editore",
+          "ppn": "26208158X"
+        }
+      ]
+    }
+  ]
+}
 ```
 
 ## VERSIONS
