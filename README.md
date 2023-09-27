@@ -125,7 +125,7 @@ Si on a activé l'affichage d'infos Sudoc sur la page de détail des notices
 bibliographiques, le service web _multiwhere_ de l'ABES est appelé pour chaque
 notice qui dispose d'un PPN. Un onglet **Sudoc** est ajouté au tableau des
 exemplaires qui est affiché sous la notice bibliographique. Dans cet onglet, les
-localisation de la notice dans les établissements Sudoc sont affichées. Chaque
+localisations de la notice dans les établissements Sudoc sont affichées. Chaque
 établissement est un lien vers la page Sudoc du RCR : nom de établissement,
 adresse, téléphone, etc.
 
@@ -143,6 +143,33 @@ devra contenir quelque chose qui ressemble à ceci :
     <span id="ppn_value">
       <xsl:value-of select="marc:controlfield[@tag=009]"/>
     </span>
+  </span>
+</xsl:if>
+```
+
+### Publications IdRef à l'OPAC
+
+En activant l'affichage des publications IdRef, la page de détail de l'OPAC est
+enrichie d'informations récupérées via le service web
+[biblio](https://documentation.abes.fr/aideidrefdeveloppeur/index.html#MicroWebBiblio)
+de l'ABES. La feuille de style de la page de détail doit insérer une balise
+contenant les PPN des auteurs/collectivités. Le plugin utilisera ces PPN pour
+aller chercher à la demande des informations IdRef. Les PPN doivent être dans
+des balises de cette forme :
+
+```html
+<span class="idref-link" ppn="124680866"/>
+```
+
+Ce qu'on peut obtenir en insérant le code suivant à sa feuille de style XSL
+dans les templates des zones 7xx :
+
+```xml
+<xsl:if test="marc:subfield[@code=3]">
+  <span class="idref-link">
+    <xsl:attribute name="ppn">
+      <xsl:value-of select="str:encode-uri(marc:subfield[@code=3], true())"/>
+    </xsl:attribute>
   </span>
 </xsl:if>
 ```

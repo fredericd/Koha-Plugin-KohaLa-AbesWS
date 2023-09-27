@@ -55,6 +55,7 @@ function pageDetail() {
 }
 
 function opacDetail() {
+  console.log('jjjjj');
   $('span.idref-link').each(function(index){
     const ppn = $(this).attr('ppn');
     const html = `
