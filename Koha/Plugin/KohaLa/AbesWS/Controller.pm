@@ -84,9 +84,9 @@ sub get {
 			query => { terms => { ppn => $ppn } }
 		}
 	};
-    $logger->warn(join(' ', @$ppn));
+    #$logger->warn(join(' ', @$ppn));
 	my $res = $e->search($query);
-    $logger->warn('retour query ES');
+    #$logger->warn('retour query ES');
 	my $hits = $res->{hits}->{hits};
 	my $ppn_to_bib;
 	for my $hit (@$hits) {
@@ -106,7 +106,8 @@ sub get {
 		@docs = sort { $key->($a) cmp $key->($b) } @docs;
 		$role->{docs} = \@docs;
 	}
-    $cache->set_in_cache($cache_key, $publications, { expiry => 100000 });
+    #$logger->warn('Mise en cache : ' . $pc->{opac}->{publication}->{expiry});
+    $cache->set_in_cache($cache_key, $publications, { expiry => $pc->{opac}->{publication}->{expiry} });
 	
 	$render->();
 }

@@ -130,6 +130,10 @@
     </xsl:attribute>
   </span>
 </xsl:if></xmp>
+   <li>
+    <label for="opac.publication.expiry">Expiration en secondes :</label>
+    <input id="opac.publication.expiry" type="text" name="opac.publication.expiry" size="50" value="[% c.opac.publication.expiry %]" />
+   </li>
   </ol>
  </fieldset>
 

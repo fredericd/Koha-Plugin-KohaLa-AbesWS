@@ -152,12 +152,14 @@ devra contenir quelque chose qui ressemble à ceci :
 En activant l'affichage des publications IdRef, la page de détail de l'OPAC est
 enrichie d'informations récupérées via le service web
 [biblio](https://documentation.abes.fr/aideidrefdeveloppeur/index.html#MicroWebBiblio)
-de l'ABES.
+de l'ABES. Ces informations sont mises en cache sur le serveur Koha afin
+d'éviter de saturer de requêtes le serveur de l'ABES. La durée de la mise en
+cache est paramétrable (1 journée par défaut).
 
 Les publications retrouvées via _biblio_ sont affichées regroupées par fonction
 de l'auteur relativement à la publication. Chaque publication présente un lien
 pour afficher la notice dans le Sudoc, ainsi qu'un lien vers la notice locale
-si elle existe dans le Catalogue Koha. L'identiication des notices Koha se fait
+si elle existe dans le Catalogue Koha. L'identification des notices Koha se fait
 sur un index Elasticsearch **ppn**.
 
 La feuille de style de la page de détail doit insérer une balise
@@ -184,8 +186,9 @@ dans les templates des zones 7xx :
 
 **Service web** — Le plugin utilise et expose un service web qui peut se
 comprendre comme une extension du service web _biblio_ de l'ABES. Pour chaque
-notice, il comprend l'information supplémentaire du _biblionumber_ de la notice
-Koha. Point d'entrée du service web du plugin pour le PPN 259238678 :
+notice, il retourne les informations de _biblio_, plus le _biblionumber_ de la
+notice Koha. Point d'entrée du service web du plugin pour, par exemple, le PPN
+259238678 :
 
 ```
 /api/v1/contrib/abesws/biblio/259238678

@@ -21,11 +21,11 @@ our $metadata = {
     description     => 'Utilisation de services web Abes',
     author          => 'Tamil s.a.r.l.',
     date_authored   => '2021-03-31',
-    date_updated    => "2023-09-04",
+    date_updated    => "2023-09-27",
     minimum_version => '22.11.00.000',
     maximum_version => undef,
     copyright       => '2023',
-    version         => '1.0.8',
+    version         => '1.0.9',
 };
 
 
@@ -118,6 +118,7 @@ sub config {
     $c->{url}->{api} ||= 'https://www.sudoc.fr/services';
     $c->{url}->{algo} ||= 'https://www.idref.fr/AlgoLiens';
     $c->{url}->{timeout} ||= 600;
+    $c->{opac}->{publication}->{expiry} = 86400;
     $c->{metadata} = $self->{metadata};
 
     my @rcr = split /\r|\n/, $c->{iln}->{rcr};
