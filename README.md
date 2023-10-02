@@ -232,6 +232,7 @@ qui renvoie :
 
 ## VERSIONS
 
+* **1.0.10** / octobre 2023 - Affichage infos auteur à l'OPAC
 * **1.0.9** / septembre 2023 - Doc + cache paramétrable
 * **1.0.8** / septembre 2023 - Koha 22.11 + affichage idref à l'OPAC
 * **1.0.6** / janvier 2022 — Un peu plus de doc

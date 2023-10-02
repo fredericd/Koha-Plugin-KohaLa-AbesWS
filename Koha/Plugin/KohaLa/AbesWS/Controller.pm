@@ -7,6 +7,7 @@ use Mojo::UserAgent;
 use Mojo::JSON qw(decode_json encode_json);
 use Koha::Plugin::KohaLa::AbesWS;
 use Search::Elasticsearch;
+use MARC::Record;
 use YAML;
 
 use Mojo::Base 'Mojolicious::Controller';
@@ -41,7 +42,21 @@ sub get {
 
     my $ua = Mojo::UserAgent->new;
     $ua = $ua->connect_timeout(15);
-    my $url = "https://www.idref.fr/services/biblio/$author_ppn.json";
+    my $url_base = 'https://www.idref.fr';
+    my $url = "$url_base/$author_ppn.xml";
+    my $response = $ua->get($url)->result;
+    if (!$response->is_success) {
+        $logger->warn(Dump($response->message));
+        return $render->();
+    }
+    my $xml = $response->body;
+    my $record = MARC::Record->new_from_xml($xml, 'UTF-8', 'UNIMARC');
+    my @notes;
+    for my $field ($record->field('3..')) {
+        push @notes, $field->subfield('a');
+    }
+
+    $url = "$url_base/services/biblio/$author_ppn.json";
     $logger->warn("get $url");
     my $response = $ua->get($url)->result;
     if (!$response->is_success) {
@@ -55,6 +70,7 @@ sub get {
 
     $logger->warn("On requête ES");
     $publications->{name} = $result->{name};
+    $publications->{notes} = \@notes if @notes;
     $result->{role} = [ $result->{role} ] if ref($result->{role}) ne 'ARRAY';
     my $ppn;
     for my $r (@{$result->{role}}) {

@@ -73,13 +73,20 @@ function opacDetail() {
           html = __('Author not found in IdRef');
         } else {
           const navig = publications.roles.map(role => `<a href="#idref-role-${role.code}" style="font-size: 90%;">${role.label} (${role.docs.length})</a>`);
+          let html_notes = '';
+          if (publications.notes) {
+            html_notes = `
+              <div style="font-size:100%; margin-bottom: 3px;">
+                ${publications.notes.join('<br/>')}
+              </div>`;
+          }
           html = `
             <h2>
               ${publications.name} / <small>
               <a href="https://www.idref.fr/${publications.ppn}" target="_blank">${publications.ppn}</a>
               </small>
             </h2>
-            <div>
+            ${html_notes}
             <div style="margin-bottom: 5px;";>${navig.join(' • ')}</div>`;
           publications.roles.forEach((role) => {
             html += `
